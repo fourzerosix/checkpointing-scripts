@@ -34,7 +34,7 @@ Arrays are a powerful concept in both general programming and in job scheduling 
 - **Organization**: Keeps related data grouped logically.
  
 ### SLURM Job Arrays
-[SLURM Job arrays](https://slurm.schedmd.com/job_array.html) offer a mechanism for submitting and managing collections of similar jobs quickly and easily - [arrays on BigSky/Skyline](https://skyline.domain.foo.bar/slurm-job-arrays/) can be:
+[SLURM Job arrays](https://slurm.schedmd.com/job_array.html) offer a mechanism for submitting and managing collections of similar jobs quickly and easily and can be:
 - Specified using the `--array` flag from the command line or within a submit script ( e.g., `--array=1-1000%10` - which would submit 1 job with 1000 tasks, 10 at a time.)
 - The smallest index that can be specified by a user is zero and the maximum index is `MaxArraySize` minus one:
   ```bash
@@ -56,9 +56,7 @@ Arrays are a powerful concept in both general programming and in job scheduling 
 ## Checkpointing
 Checkpointing from within or in-tandem with your code:
 We’ve modified some existing submission scripts to leverage checkpointing, provided examples of data-science/bioinformatics software (TensorFlow/Keras/NumPy) that can leverage checkpointing within their own code, as well as written some new ones as examples, some of which involve resource requests that would be potentially inhibited or prohibited by [common SLURM scheduling limitations](https://slurm.schedmd.com/job_reason_codes.html#common_reasons) when implemented without checkpointing mechanisms in place. These scripts are only meant to outline basic principles in hopes that they’ll give you a sort of skeleton to build your code around.
- 
-> **SLURM Checkpointing script repository: `/data/user-utils/user-scripts/checkpointing`**
- 
+  
 - `purple-rain.sbatch` runs a large-scale array job (2000 tasks) where each task performs iterative work with checkpointing - this tests SLURMs `MaxArraySize` and uses resubmission logic. 
 
 - `purple-rain-requeue.sbatch` is the same script from above, using SLURM’s built-in requeue support instead of resubmission (which involves manually calling sbatch each time). This means, at the end of your script, SLURM will put the same job back into the queue, preserving its array index. This method is more efficient because:
@@ -108,8 +106,6 @@ We’ve modified some existing submission scripts to leverage checkpointing, pro
 
  ---
  
-> **Application-Level Checkpointing/Array script repository: `/data/user-utils/user-scripts/checkpointing/arrays`**
-
 - `/vectors` - (contains 2 scripts that are intended to work in-tandem and should reside in the same directory)
   - `numpy-knuckles.sbatch`
     - Loads the Miniconda3 module,
@@ -136,11 +132,6 @@ We’ve modified some existing submission scripts to leverage checkpointing, pro
 
 ## Checkpointing with DMTCP:
 [DMTCP](https://github.com/dmtcp/dmtcp) (Distributed MultiThreaded Checkpointing) transparently checkpoints a single-host or distributed computation to disk, in user-space. It works with no modifications to the Linux kernel nor to the application binaries. It can be used by unprivileged users (no root privilege needed) - the newest version is installed as a module on BigSky and Skyline ( currently `dmtcp/3.2.0-qr37nrg` ). You can later restart from a checkpoint or even migrate processes by moving the checkpoint files to another host prior to restarting.
- 
-- DMTCP can be invoked via calling the module in an sbatch script or invoked from the command line, there’s a test-set of data (array/C++ code) and a pre-written submit script (with included wrapper-script) here:
-  ```bash
-  /data/user-utils/user-scripts/checkpointing/dmtcp
-  ```
 
 - `/DMTCP` (contains 4 files that are intended to work in-tandem and should reside in the same directory, including a test-set of data (array/C++ code) and a pre-written submit script (with included wrapper-script)
   - `dmtcp-array.sbatch`
