@@ -1,6 +1,5 @@
 #!/bin/bash
 # Author: Dolphin Whisperer
-# Email: jeremy.bell@nih.gov
 # Created: 2025-04-21
 # Description: This script submits numpy-vectors.py to SLURM
 
